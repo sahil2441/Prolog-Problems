@@ -57,6 +57,22 @@ evaluate(tree(X,Y),L,Max):-
 	),
 	!.
 
+%part3
+evaluate(tree(X,Y),L,Max):-
+	L=[H|T],
+	integer(Y),
+	evaluate(X,T,M1),
+	(
+		H == 'plus' ->
+			Max is M1+Y
+		; H =='minus' ->
+			Max is M1-Y
+		; H == 'mult' ->
+			Max is M1*Y
+	),
+	!.
+
+%FinalPart
 
 
 
