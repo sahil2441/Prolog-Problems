@@ -1,0 +1,6 @@
+
+loop(I,I).
+loop(I,N):-
+	write(I),nl,
+	J is I+1,
+	loop(J,N).

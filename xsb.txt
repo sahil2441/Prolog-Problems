@@ -1,0 +1,1 @@
+/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/xsb/config/i386-apple-darwin10.8.0/bin/xsb
