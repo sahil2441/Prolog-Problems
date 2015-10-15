@@ -1,1 +1,0 @@
-maxval(tree(1,tree(1, 2)), [plus,minus], 3).

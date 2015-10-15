@@ -93,20 +93,21 @@ integers(tree(X,Y),2):-
 
 integers(tree(X,Y),N):-
 	integer(X),
-	N is M+1,
 	integers(Y,M),
+	N is M+1,
+
 	!.
 
 integers(tree(X,Y),N):-
 	integer(Y),
-	N is M+1,
 	integers(X,M),
+	N is M+1,
 	!.
 
 integers(tree(X,Y),N):-
-	N is M1 + M2,
 	integers(X,M1),
 	integers(Y,M2),
+	N is M1 + M2,
 	!.
 
 %Helper
@@ -114,8 +115,8 @@ sublist([_|_],0,[]).
 sublist([H|_],1,[H]).
 sublist(L,N,L1):-
 	L=[H|T],
-	N1 is N-1,
 	sublist(T,N1,L2),
+	N is N1+1,
 	append(L2,H,L1).
 
 
@@ -145,8 +146,8 @@ permute([H|T],L):-
 
 factorial(0,1).
 factorial(N,F):-
-	M is N-1,
 	factorial(M,F1),
+	N is M+1,
 	F is N*F1.
 
 max(X,Y,Y)  :- 
