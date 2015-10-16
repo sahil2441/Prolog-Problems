@@ -9,41 +9,67 @@
 % journey(dork,[hammemille, overijse, tervuren, sterrebeek])],
 % 10,3,P).
 
-maxPleasure(L, TravelPleasure, NightPleasure, P):-
+maximalPleasure(L, TravelPleasure, NightPleasure, P):-
 
 	% Make a list of names of friends
-	generateFriendList(L,Friends),
+   	findall(X, generateFriendList(L,X), ListWithDuplicates),
+	set(ListWithDuplicates,Friends),
+	write('\nFriends: '+Friends+'\n'),
 	
-	% TravelLists is a list of lists
-	generateTravelLists(L,Friends,TravelLists),
-	forall(evaluate(TravelLists,P)).
+	% TravelLists is a list of lists that contain routes
+	findall(TravelList, generateTravelLists(L,Friends,TravelList),TravelLists),
+	write('\nTravelLists: '+TravelLists+'\n'),
 
-evaluate(TravelLists,P):-
+	findall(Pleasure,evaluate(TravelLists,TravelPleasure,NightPleasure,Pleasure),
+		Pleasures),
+	quick_sort(Pleasures,SortedPleasures),
+	rev(SortedPleasures,RL),
+	RL= [H|_],
+	P is H.
 
-	TravelLists=[H|T],
+evaluate(TravelLists,TravelPleasure,NightPleasure,Pleasure):-
+	member(X,TravelLists),
+	member(Y,TravelLists),
+	X\=Y,
+	calculatePleasure(X,Y,0,TravelPleasure,NightPleasure,Pleasure).
 
-generateFriendLists(_,[],[]).
-generateTravelLists(L,Friends,TravelLists):-
-	Friends= [H|T],
-	generateFriendListHelper(L,H,TravelList),
-	generateTravelLists(L,T,Acc),
-	append(Acc,TravelList,TravelLists).
+calculatePleasure([],_,_,_,_,_).
+calculatePleasure(_,[],_,_,_,_).
+calculatePleasure(Route1,Route2,N,TravelPleasure,NightPleasure,Pleasure):-
+	Route1=[H1|T1],
+	Route2=[H2|T2],
+	M is N+1,
+	calculatePleasure(T1,T2,M,TravelPleasure,NightPleasure,P),
 
-% //TODO
-generateFriendListHelper(L,F,TravelList):-
-	.
+	(
+		H1 == H2 ->
+		Pleasure is 2*NightPleasure + P
+		;
+		true
+	),
+
+	(
+		N>0 ->
+		Pleasure is 2*TravelPleasure +P
+		;
+		true
+	).
+
+generateTravelLists(L,Friends,TravelList):-
+	member(Friend,Friends),
+	findall(TravelRoute,getTravelListForX(L,Friend,TravelRoute),TravelList).
 	
-generateFriendList([],[]).
-generateFriendList(L,List1):-
-	L=[H|T],
-	H=[Friend|T1],
-	append(List2,Friend,List1),
-	generateFriendList(T,List2).
+getTravelListForX(L,Friend,TravelList):-
+	member(X,L),
+	X =journey(Friend,TravelList).
 	
+generateFriendList(L,Friend):-
+	member(X,L),
+	X =journey(Friend,_).	
 
-%%%%%%%%%%%%%%%%%%%%%
-%Helper Functions
-%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%% Helper Functions 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 member(X,[X|_]).
 member(X,[_|Ys]):-
@@ -60,9 +86,9 @@ length1([_|Xs], M):-
 
 factorial(0,1).
 factorial(N,F):-
-	M is N-1,
 	factorial(M,F1),
-	F is N*F1.
+	F is N*F1,
+	N is M+1.
 
 delete1([H|T],H,T).
 delete1([H|Ys],X,[H|Zs]):-
@@ -126,8 +152,8 @@ findLast([_|T],X):-
 findK(_,[],'Nil').
 findK(1,[H|_],H).
 findK(K,[_|T],X):-
-	M is K-1,
-	findK(M,T,X).
+	findK(M,T,X),
+	K is M+1.
 
 reverse1([],[]).
 reverse1([H|T],L):-
@@ -188,8 +214,8 @@ preorder_dl(Root,L,T):-
 range(Y,X,[]):-
 	Y >X.
 range(X,Y,[X|T]):-
-	X1 is X+1,
-	range(X1,Y,T).
+	range(X1,Y,T),
+	X is X1-1.
 
 
 preorder_dnl(Root, L) :-
@@ -244,9 +270,9 @@ pack_helper(_,L1,L1).
 divisible(M,X):-
 	0 is X mod M,!.
 divisible(M,X):-	
-	N is M+1,
 	N<X,
-	divisible(N,X).
+	divisible(N,X),
+	M is N-1.
 isPrime(2).
 isPrime(X):-
 	X<2,
@@ -259,11 +285,12 @@ primeList(0, []) :- !.
 primeList(N, [N|L]) :-
     isPrime(N),
     !,
-    NewN is N - 1,
-    primeList(NewN, L).
+    primeList(NewN, L),
+    N is NewN+1.
+
 primeList(N, L) :-
-    NewN is N - 1,
-    primeList(NewN, L).
+    primeList(NewN, L),
+    N is NewN+1.
 
 naiveSort(X,L):-
 	permute(X,L),
@@ -299,10 +326,22 @@ q_sort([H|T],Acc,Sorted):-
 	q_sort(L1,Acc,Sorted1),q_sort(L2,[H|Sorted1],Sorted).
 
 subsequence([H|T],[H|T2]) :- subsequence(T,T2).
-subsequence([H|T],[H2|T2]) :- subsequence(T,[H2|T2]).
+subsequence([_|T],[H2|T2]) :- subsequence(T,[H2|T2]).
 subsequence(_,[]).
 
+remove_duplicates([],[]):- !.
+remove_duplicates([H|T],R):- member(H,T),remove_duplicates(T,R),!.
+remove_duplicates([H|T],[R|Rest]):- remove_duplicates(T,Rest).
 
+mymember(X,[X|_]).
+mymember(X,[_|T]) :- mymember(X,T).
 
+not(A) :- \+ call(A).
 
-
+set([],[]).
+set([H|T],[H|Out]) :-
+    not(mymember(H,T)),
+    set(T,Out).
+set([H|T],Out) :-
+    mymember(H,T),
+    set(T,Out).

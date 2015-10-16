@@ -18,9 +18,9 @@ length1([_|Xs], M):-
 
 factorial(0,1).
 factorial(N,F):-
-	M is N-1,
 	factorial(M,F1),
-	F is N*F1.
+	F is N*F1,
+	N is M+1.
 
 delete1([H|T],H,T).
 delete1([H|Ys],X,[H|Zs]):-
@@ -84,8 +84,8 @@ findLast([_|T],X):-
 findK(_,[],'Nil').
 findK(1,[H|_],H).
 findK(K,[_|T],X):-
-	M is K-1,
-	findK(M,T,X).
+	findK(M,T,X),
+	K is M+1.
 
 reverse1([],[]).
 reverse1([H|T],L):-
@@ -146,8 +146,8 @@ preorder_dl(Root,L,T):-
 range(Y,X,[]):-
 	Y >X.
 range(X,Y,[X|T]):-
-	X1 is X+1,
-	range(X1,Y,T).
+	range(X1,Y,T),
+	X is X1-1.
 
 
 preorder_dnl(Root, L) :-
@@ -202,9 +202,9 @@ pack_helper(_,L1,L1).
 divisible(M,X):-
 	0 is X mod M,!.
 divisible(M,X):-	
-	N is M+1,
 	N<X,
-	divisible(N,X).
+	divisible(N,X),
+	M is N-1.
 isPrime(2).
 isPrime(X):-
 	X<2,
@@ -217,11 +217,12 @@ primeList(0, []) :- !.
 primeList(N, [N|L]) :-
     isPrime(N),
     !,
-    NewN is N - 1,
-    primeList(NewN, L).
+    primeList(NewN, L),
+    N is NewN+1.
+
 primeList(N, L) :-
-    NewN is N - 1,
-    primeList(NewN, L).
+    primeList(NewN, L),
+    N is NewN+1.
 
 naiveSort(X,L):-
 	permute(X,L),

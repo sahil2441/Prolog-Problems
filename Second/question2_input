@@ -1,0 +1,1 @@
+maximalPleasure([journey(bozo,[heverlee,bertem,tervuren]),journey(bozo,[heverlee,korbeekdijle,tervuren]),journey(dork,[hammemille,korbeekdijle,tervuren,sterrebeek]),journey(dork,[hammemille,overijse,tervuren,sterrebeek])],10,3,P).
