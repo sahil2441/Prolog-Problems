@@ -19,8 +19,11 @@ maximalPleasure(L, TravelPleasure, NightPleasure, P):-
 	% TravelLists is a list of lists that contain routes
 	findall(TravelList, generateTravelLists(L,Friends,TravelList),TravelLists),
 	write('\nTravelLists: '+TravelLists+'\n'),
+	mmproduct(TravelLists,Pairs),
+	write('\nTravelLists: '+Pairs+'\n'),
 
-	findall(Pleasure,evaluate(TravelLists,TravelPleasure,NightPleasure,Pleasure),
+
+	findall(Pleasure,evaluate(Pairs,TravelPleasure,NightPleasure,Pleasure),
 		Pleasures),
 	quick_sort(Pleasures,SortedPleasures),
 	rev(SortedPleasures,RL),
@@ -345,3 +348,4 @@ set([H|T],[H|Out]) :-
 set([H|T],Out) :-
     mymember(H,T),
     set(T,Out).
+
