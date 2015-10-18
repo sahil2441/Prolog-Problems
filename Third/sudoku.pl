@@ -100,6 +100,6 @@ sudoku(Puzzle,Puzzle) :-
 test(N,NewPuzzle) :- puzzle(N,P), sudoku(P,NewPuzzle).
 
 puzzle(1,P) :- 
-   P = [3,4,1,_, 1,2,_,4, _,_,_,_, 4,3,2,_].
-   
+   P = [_,_,_,_, 1,2,_,4, _,_,_,_, _,_,_,_].
+
 
