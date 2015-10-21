@@ -33,7 +33,7 @@ getNameList([H],[X]):-
 getNameList([H|T], Names):-
 	H=journey(X,_),
 	getNameList(T,L1),
-	append(L1,X,Names),!.
+	append(L1,[X],Names),!.
 
 
 
