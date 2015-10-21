@@ -29,11 +29,23 @@ compress([X,X|Xs],Zs) :- compress([X|Xs],Zs).
 compress([X,Y|Ys],[X|Zs]) :- X \= Y, compress([Y|Ys],Zs).
 
 getNameList([H],[X]):-
-	H=journey(X,_),!.
+	H=journey(X,_).
 getNameList([H|T], Names):-
 	H=journey(X,_),
 	getNameList(T,L1),
-	append(L1,[X],Names),!.
+	append(L1,[X],Names).
+
+getTravelList(_,[],[]).
+getTravelList([],_,[]).
+getTravelList(Name,[H|T],L):-
+	H=journey(X,Y),
+	(
+		X = Name ->
+		append(L1,[Y],L)
+		;
+		true
+	),
+	getTravelList(Name,T,L1).
 
 
 
@@ -55,7 +67,8 @@ getNameList([H|T], Names):-
 %%%%%%%%%%%% test(1,X).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(N,Result) :-    input(N,P), getNameList(P,Result).
+test(N,Result) :-   input(N,P), 
+					getTravelList(bozo,P,Result).
 
 input(1,N):-
 	N=[journey(bozo,[heverlee, bertem, tervuren]),
@@ -67,9 +80,13 @@ input(2,N):-
 	N=[
 		journey(bozo,[heverlee, bertem, tervuren]),
 		journey(dork,[hammemille, overijse, tervuren, sterrebeek])
-
 		].
 
+input(3,N):-
+	N=[
+		journey(bozo,[heverlee, bertem, tervuren]),
+		journey(bozo,[heverlee, korbeekdijle, tervuren])
+		].
 
 
 
