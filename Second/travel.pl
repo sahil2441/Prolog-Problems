@@ -61,7 +61,7 @@ cartProduct([H|T],L,Result):-
 makepairs(_,[],[]).
 makepairs(X,[H|T],Result):-
 	makepairs(X,T,Result1),
-	append([X],H,CurrentResult),
+	append([X],[H],CurrentResult),
 	append(Result1,[CurrentResult],Result).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -86,10 +86,16 @@ test(N,Result) :-
 	cartProduct(L1,L2,Result).
 
 getL1(1,L):-
-	L=[1,2].
+	L=[
+		[heverlee, korbeekdijle, tervuren],
+		[heverlee, bertem, tervuren]
+		].
 
 getL2(1,L):-
-	L=[3,4].
+	L=[
+		[hammemille, korbeekdijle, tervuren, sterrebeek],
+		[hammemille, overijse, tervuren, sterrebeek]
+		].
 
 input(1,N):-
 	N=[journey(bozo,[heverlee, bertem, tervuren]),
