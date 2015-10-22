@@ -19,6 +19,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+member(X,[X|_]).
+member(X,[_|Ys]):-
+	member(X,Ys).
+
 append([],L,L).
 append([H|T],X,[H|Y]):-
 	append(T,X,Y).
@@ -47,10 +51,19 @@ getTravelList(Name,[H|T],L):-
 	),
 	getTravelList(Name,T,L1).
 
+cartProduct([],_,[]).
+cartProduct(_,[],[]).
+cartProduct([H|T],L,Result):-
+	makepairs(H,L,CurrentResult),
+	cartProduct(T,L,Result1),
+	append(Result1,CurrentResult,Result).
 
+makepairs(_,[],[]).
+makepairs(X,[H|T],Result):-
+	makepairs(X,T,Result1),
+	append([X],H,CurrentResult),
+	append(Result1,[CurrentResult],Result).
 
-
-	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% MAIN METHOD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -67,8 +80,16 @@ getTravelList(Name,[H|T],L):-
 %%%%%%%%%%%% test(1,X).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(N,Result) :-   input(N,P), 
-					getTravelList(bozo,P,Result).
+test(N,Result) :-   
+	getL1(N,L1),
+	getL2(N,L2),
+	cartProduct(L1,L2,Result).
+
+getL1(1,L):-
+	L=[1,2].
+
+getL2(1,L):-
+	L=[3,4].
 
 input(1,N):-
 	N=[journey(bozo,[heverlee, bertem, tervuren]),
@@ -87,6 +108,5 @@ input(3,N):-
 		journey(bozo,[heverlee, bertem, tervuren]),
 		journey(bozo,[heverlee, korbeekdijle, tervuren])
 		].
-
 
 
