@@ -22,6 +22,15 @@ rev([H|T],L):-
 	rev(T,L1),
 	append(L1,[H],L).
 
+pivoting(_,[],_,_).
+pivoting(H,[A|T],[A|L1],L2):-
+	A=<H,
+	pivoting(H,T,L1,L2).
+
+pivoting(H,[A|T],L1,[A|L2]):-
+	A>H,
+	pivoting(H,T,L1,L2).
+
 quick_sort([],[]).
 quick_sort([H|T],L):-
 	pivoting(H,T,L1,L2),
@@ -47,24 +56,21 @@ compress([X],[X]).
 compress([X,X|Xs],Zs) :- compress([X|Xs],Zs).
 compress([X,Y|Ys],[X|Zs]) :- X \= Y, compress([Y|Ys],Zs).
 
-getNameList([H],[X]):-
-	H=journey(X,_).
+getNameList([],[]).
 getNameList([H|T], Names):-
 	H=journey(X,_),
 	getNameList(T,L1),
 	append(L1,[X],Names).
 
 getTravelList(_,[],[]).
-getTravelList([],_,[]).
-getTravelList(Name,[H|T],L):-
+getTravelList(Name,[H|T],[Y|L]):-
 	H=journey(X,Y),
-	(
-		X = Name ->
-		append(L1,[Y],L)
-		;
-		true
-	),
-	getTravelList(Name,T,L1).
+	X = Name,
+	getTravelList(Name,T,L).
+getTravelList(Name,[H|T],L):-
+	H=journey(X,_),
+	X \= Name,
+	getTravelList(Name,T,L).
 
 cartProduct([],_,[]):-!.
 cartProduct(_,[],[]):-!.
@@ -131,15 +137,14 @@ maximalpleasure([],_,_,0).
 maximalpleasure(L,TravellingPleasure,MeetingPleasure,Pleasure):-
 	getNameList(L,Names),
 	compress(Names,Names1),
-	Names1=[H|T]- T,
+	Names1=[H,T|_],
 	getTravelList(H,L,List1),
 	getTravelList(T,L,List2),
 	cartProduct(List1, List2, Pairs),
 	obtainPleasureList(Pairs, TravellingPleasure, MeetingPleasure, Pleasures),
 	quick_sort(Pleasures,SortedPleasures),
 	rev(SortedPleasures,ReverseSortedPleasures),
-	ReverseSortedPleasures= [H1|_],
-	Pleasure=H1.
+	ReverseSortedPleasures= [Pleasure|_].
 
 	
 obtainPleasureList([],_,_,[]):-!.
@@ -157,10 +162,8 @@ obtainPleasureList(Pairs, TravellingPleasure, MeetingPleasure, Pleasures):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test(N,Result) :-   
-	getL1(N,L1),
-	getL2(N,L2),
-	cartProduct(L1,L2,L),
-	obtainPleasureList(L,10,3,Result).
+	input(N,I),
+	maximalpleasure(I,10,3,Result).
 
 getL1(1,L):-
 	L=[[heverlee, bertem, tervuren],
