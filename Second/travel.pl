@@ -11,13 +11,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
- %:- import append/3  from basics.
  
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% HELPER FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+length1([], 0).
+length1([_|Xs], M):-
+	length1(Xs, N),
+	M is N+1.
 
 member(X,[X|_]).
 member(X,[_|Ys]):-
@@ -64,6 +68,48 @@ makepairs(X,[H|T],Result):-
 	append([X],[H],CurrentResult),
 	append(Result1,[CurrentResult],Result).
 
+calculatePleasure([],_,_,0).
+calculatePleasure([H|T]- T, TravellingPleasure, MeetingPleasure,Pleasure):-
+	calculatePleasureForTwoRoutes(H,T,TravellingPleasure,
+		MeetingPleasure,Pleasure).
+
+calculatePleasureForTwoRoutes([],_,_,_,0).
+calculatePleasureForTwoRoutes(_,[],_,_,0).
+calculatePleasureForTwoRoutes(A,B,TravellingPleasure,MeetingPleasure,Pleasure):-
+	A=[H1|T1],
+	B=[H2|T2],
+	length1(T1,Len1),
+	length1(T2,Len2),
+
+	(
+		H1=H2 ->
+		(
+			Len1>0 ->
+				(
+					Len2>0 ->
+						T1=[H11|_],
+						T2=[H22|_],
+						(
+							H11=H22 ->
+							CurrentPleasure is 
+							2*TravellingPleasure+2*MeetingPleasure 							
+							;
+							CurrentPleasure is 2*MeetingPleasure
+						)
+						;
+						CurrentPleasure is 2*MeetingPleasure
+				)
+			;
+			CurrentPleasure is 2*MeetingPleasure
+		)
+		;
+		CurrentPleasure is 0
+	),
+
+	calculatePleasureForTwoRoutes(T1,T2,TravellingPleasure,
+		MeetingPleasure,Pleasure1),
+	Pleasure is Pleasure1 + CurrentPleasure.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% MAIN METHOD
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -71,6 +117,10 @@ makepairs(X,[H|T],Result):-
 
 
 
+
+
+
+	
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -83,19 +133,14 @@ makepairs(X,[H|T],Result):-
 test(N,Result) :-   
 	getL1(N,L1),
 	getL2(N,L2),
-	cartProduct(L1,L2,Result).
+	calculatePleasureForTwoRoutes(L1,L2,10,3,Result).
 
 getL1(1,L):-
-	L=[
-		[heverlee, korbeekdijle, tervuren],
-		[heverlee, bertem, tervuren]
-		].
+	L=[heverlee, korbeekdijle, tervuren].
 
 getL2(1,L):-
-	L=[
-		[hammemille, korbeekdijle, tervuren, sterrebeek],
-		[hammemille, overijse, tervuren, sterrebeek]
-		].
+	L=[hammemille, korbeekdijle, tervuren, sterrebeek].
+
 
 input(1,N):-
 	N=[journey(bozo,[heverlee, bertem, tervuren]),
