@@ -1,23 +1,8 @@
 
-% The idea is to generate all permutations of the given operating sequence
-% and store result form each one of them into a list and then find the max 
-% element of that list.
-% maxval(tree(1,2),[min],Max).
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%% TEST CASES
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-test(N,P):-
-	getTree(N,T),
-	getList(N,L),
-	maxval(T,L,P).
-
-getTree(1,tree(tree(1,2),tree(3,4))).
-getList(1,[mult,mult,mult]).
-
-getTree(2,tree(tree(6,8),tree(2,2))).
-getList(2,[plus,mult,min]).
+%The idea is to generate all permutations of the given operating sequence
+%and store result form each one of them into a list and then find the max 
+%element of that list.
+% maxval(tree(1,2),[minus],Max).
 
 maxval(tree(X,Y),L,Max):-
 	findall(M, startmaxval(tree(X,Y),L,M), Collections),
@@ -31,12 +16,12 @@ startmaxval(tree(X,Y),L,M):-
 	evaluate(tree(X,Y),L1,M).
 
 
-% Spliting the evaluate fuction into four cases
-% when both sub trees are atoms
-% when exactly one of them is atom
-% when both of them are not atoms
+%Spliting the evaluate fuction into four cases
+%when both sub trees are atoms
+%when exactly one of them is atom
+%when both of them are not atoms
 
-% part1
+%part1
 evaluate(tree(X,Y),L,Max):-
 	L=[H],
 	integer(X),
@@ -44,13 +29,13 @@ evaluate(tree(X,Y),L,Max):-
 	(
 		H == 'plus' ->
 			Max is X+Y
-		; H =='min' ->
+		; H =='minus' ->
 			Max is X-Y
 		; H == 'mult' ->
 			Max is X*Y
 	).
 	
-% part2
+%part2
 evaluate(tree(X,Y),L,Max):-
 	L=[H|T],
 	integer(X),
@@ -58,14 +43,14 @@ evaluate(tree(X,Y),L,Max):-
 	(
 		H == 'plus' ->
 			Max is X+M1
-		; H =='min' ->
+		; H =='minus' ->
 			Max is X-M1
 		; H == 'mult' ->
 			Max is X*M1
 	).
 	
 
-% part3
+%part3
 evaluate(tree(X,Y),L,Max):-
 	L=[H|T],
 	integer(Y),
@@ -73,14 +58,14 @@ evaluate(tree(X,Y),L,Max):-
 	(
 		H == 'plus' ->
 			Max is M1+Y
-		; H =='min' ->
+		; H =='minus' ->
 			Max is M1-Y
 		; H == 'mult' ->
 			Max is M1*Y
 	).
 	
-% FinalPart
-% We need to keep H and split T between two subtrees
+%FinalPart
+%We need to keep H and split T between two subtrees
 evaluate(tree(X,Y),L,Max):-
 	L=[H|T],
 	integers(X,N1),
@@ -100,7 +85,7 @@ evaluate(tree(X,Y),L,Max):-
 	evaluate(Y,L2,R2),
 	evaluate(tree(R1,R2),[H],Max).
 
-% Helper
+%Helper
 integers(tree(X,Y),2):-
 	integer(X),
 	integer(Y),
@@ -108,21 +93,20 @@ integers(tree(X,Y),2):-
 
 integers(tree(X,Y),N):-
 	integer(X),
-	integers(Y,M),
 	N is M+1,
-
+	integers(Y,M),
 	!.
 
 integers(tree(X,Y),N):-
 	integer(Y),
-	integers(X,M),
 	N is M+1,
+	integers(X,M),
 	!.
 
 integers(tree(X,Y),N):-
+	N is M1 + M2,
 	integers(X,M1),
 	integers(Y,M2),
-	N is M1 + M2,
 	!.
 
 %Helper
@@ -130,8 +114,8 @@ sublist([_|_],0,[]).
 sublist([H|_],1,[H]).
 sublist(L,N,L1):-
 	L=[H|T],
+	N1 is N-1,
 	sublist(T,N1,L2),
-	N is N1+1,
 	append(L2,H,L1).
 
 
@@ -161,8 +145,8 @@ permute([H|T],L):-
 
 factorial(0,1).
 factorial(N,F):-
+	M is N-1,
 	factorial(M,F1),
-	N is M+1,
 	F is N*F1.
 
 max(X,Y,Y)  :- 
@@ -196,7 +180,6 @@ pivoting(H,[A|T],[A|L1],L2):-
 pivoting(H,[A|T],L1,[A|L2]):-
 	A>H,
 	pivoting(H,T,L1,L2).
-
 
 
 
