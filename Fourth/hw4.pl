@@ -5,7 +5,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%% BASICS
+%%%%%%%%%%%% BASICS FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 rev([],[]).
@@ -36,9 +36,33 @@ inquire(IN,OUT):-
       OUT = IN 
         ;    % more
       inquire([Data|IN],OUT) ) .
+%%
+%% Write to a file from a List
+%%
+write_list_to_file(Filename,List) :-
+    tell(Filename),     % open file to be written 
+    loop_through_list(List),
+    told.               % flush buffer   
+
+loop_through_list([]).
+loop_through_list([Head|Tail]) :-
+    write(Head),
+    nl,
+    loop_through_list(Tail).
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% MAIN CODE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+hw4(INPUTFILE,OUTPUTFILE):-
+	file_to_list(INPUTFILE,List),
+	write_list_to_file(OUTPUTFILE,List).
+
+
+
+
 
 
 
@@ -49,14 +73,20 @@ inquire(IN,OUT):-
 %%%%%% test(2,X).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(N,Result) :- getInput(N,FILE),file_to_list(FILE,Result).
+test(N) :- 
+	getInput(N,FILE),
+	getOutput(N,OUTPUTFILE),
+	file_to_list(FILE,L), 
+	write_list_to_file(OUTPUTFILE,L).
 
 getInput(1,FILE):-
 	FILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/input.txt'.
 
+getOutput(1,OUTPUTFILE):-
+	OUTPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/output.txt'.	
 
-puzzle(1,P) :- 
-   P = [_,_,_,_, 1,2,_,4, _,_,_,_, _,_,_,_].
+
+
 
 
 
