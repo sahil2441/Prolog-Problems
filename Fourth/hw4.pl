@@ -17,9 +17,25 @@ append([],L,L).
 append([H|T],X,[H|Y]):-
 	append(T,X,Y).
 
+length1([], 0).
+length1([_|Xs], M):-
+	length1(Xs, N),
+	M is N+1.
+
+member(X,[X|_]).
+member(X,[_|Ys]):-
+	member(X,Ys).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% HELPER FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% Basic Rule of negation
+%%
+check_negation(neg(neg(A)),A):-!.
+check_negation(A,A):-
+	A=neg(_),
+	!.
 
 %%
 %% Load a file of Prolog terms into a List.
@@ -74,7 +90,6 @@ convert_elements_to_list([H|T],L):-
 %%
 %%	'Actually' Converts the or clause into the list
 %%
-
 convert_helper(X,L):-
 	 X=or(A,B),
 	 convert_helper(A,L1),
@@ -83,6 +98,80 @@ convert_helper(X,L):-
 
 convert_helper(X,L):-
 	L=[X].	
+
+%%
+%%	Start the resolution process.
+%%  If the last member of list has empty list of CNF then stop.
+%%
+start_resolution_process(L,L):-
+	get_last_element(L,A),
+	A=myClause(_,[]),
+	!.
+%%
+%%	Start the resolution process --else
+%%
+start_resolution_process(L,Result):-
+	
+	get_last_element(L,A),
+	A=myClause(I,L1),
+
+	%% find which member list contnains H1. Returns a clause.
+	find_corresponding_clause_in_list(L,L1,X),
+	X\=[],
+
+	%% J to be used as interger in resolution
+	J is I+1,
+	X=myClause(_,L),
+	union(L,T1),
+
+	Result1=resolution(J,List),
+	append(L,Result1,Result2),
+	start_resolution_process(Result2,Result),
+	!.
+
+%%
+%%	This only gets called if above method could not find any element list that contains negation of element.
+%%	
+start_resolution_process(L,Result):-
+	X='The resolution doesnt evaluate to null/false.',
+	append(L,[X],Result),
+	!.
+
+%%
+%%	Returns last element of a list
+%%
+get_last_element(L,H):-
+	rev(L,[H|_]).
+
+%%
+%%	Finds a corresponding clause in list whos list contains the negation of any element from the given list.
+%%
+find_corresponding_clause_in_list([],_,[]):-!.
+
+find_corresponding_clause_in_list([H|_],L1,H):-
+	H=myClause(_,B),
+	findall(X,search(B,L1,X),L),
+	length1(L,Length),
+	Length>0,
+	!.
+
+find_corresponding_clause_in_list([_|T],L1,B):-
+	find_corresponding_clause_in_list(T,L1,B),
+	!.
+
+%%
+%%	Compares two lists to find a common member , if exists
+%%
+search(L1,L2,X):-
+	member(X,L1),
+	check_negation(neg(X),Y),
+	member(Y,L2).
+
+
+
+
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -94,12 +183,13 @@ hw4(INPUTFILE,OUTPUTFILE):-
 	rev(List,RevL),
 	convert_query_to_clause(RevL,L1),
 	rev(L1,L2),
-	%%
-	%%	More Work to do with L2
-	%%
 	convert_elements_to_list(L2,L3),
 	rev(L3,L4),
-	write_list_to_file(OUTPUTFILE,L4).
+	%%
+	%%	More Work to do with L3
+	%%
+	start_resolution_process(L4,L5),
+	write_list_to_file(OUTPUTFILE,L5).
 
 
 
@@ -112,18 +202,19 @@ hw4(INPUTFILE,OUTPUTFILE):-
 %%%%%% TEST CASES
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(1) :- 
-	getInput(N,INPUTFILE),
-	getOutput(N,OUTPUTFILE),
-	hw4(INPUTFILE,OUTPUTFILE).
+test(1,X) :- 
+%	getInput(N,INPUTFILE),
+%	getOutput(N,OUTPUTFILE),
+%	hw4(INPUTFILE,OUTPUTFILE).
 
 
 	%%
 	%%	Testing convert list
 	%%
 
-%	getList(1,L),
-%	convert_elements_to_list(L,N).
+	getList1(1,L),
+	find_corresponding_clause_in_list(L,[b3],X).
+	
 
 getInput(1,INPUTFILE):-
 	INPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/input.txt'.
@@ -137,6 +228,15 @@ getList(1,L):-
 		myClause(3,or(neg(b_2),b_3))
 	].
 
+getList1(1,L):-
+	L=
+	[
+	myClause(1,[a_1,a_2]),
+	myClause(2,[neg(a_2),b_2,b_3]),
+	myClause(3,[neg(b_2),b_3]),
+	myClause(4,[neg(b3)]),
+	myClause(5,[neg(a_1)])
+	].
 
 
 
