@@ -145,9 +145,9 @@ maximalpleasure(L,TravellingPleasure,MeetingPleasure,Pleasure):-
 obtainPleasureList([],_,_,[]):-!.
 obtainPleasureList(Pairs, TravellingPleasure, MeetingPleasure, Pleasures):-
 	Pairs=[H|T],
-	calculatePleasure(H,TravellingPleasure,MeetingPleasure,CurrentPleasure),
 	obtainPleasureList(T,TravellingPleasure,MeetingPleasure,L1),
-	append(L1,CurrentPleasure,Pleasures).
+	calculatePleasure(H,TravellingPleasure,MeetingPleasure,CurrentPleasure),
+	append(L1,[CurrentPleasure],Pleasures).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,15 +163,12 @@ test(N,Result) :-
 	obtainPleasureList(L,10,3,Result).
 
 getL1(1,L):-
-%	L=[[heverlee, bertem, tervuren],
-%		[heverlee, korbeekdijle, tervuren]].
-	L=[[heverlee, bertem, tervuren]].
+	L=[[heverlee, bertem, tervuren],
+		[heverlee, korbeekdijle, tervuren]].
 
 getL2(1,L):-
-%	L=[[hammemille, korbeekdijle, tervuren, sterrebeek],
-%		[hammemille, overijse, tervuren, sterrebeek]].
-
-	L=[[hammemille, korbeekdijle, tervuren, sterrebeek]].
+	L=[[hammemille, korbeekdijle, tervuren, sterrebeek],
+		[hammemille, overijse, tervuren, sterrebeek]].
 
 input(1,N):-
 	N=[journey(bozo,[heverlee, bertem, tervuren]),
