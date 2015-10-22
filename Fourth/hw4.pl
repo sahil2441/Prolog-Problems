@@ -50,6 +50,14 @@ loop_through_list([Head|Tail]) :-
     nl,
     loop_through_list(Tail).
 
+%%
+%%	Changes the query element of list to clause with a negation sign
+%%	Change the head of list
+%%
+convert_query_to_clause([H|T],L1):-
+	H=myQuery(X,Y),
+	A=myClause(X,Y),
+	L1=[A|T].
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -58,7 +66,13 @@ loop_through_list([Head|Tail]) :-
 
 hw4(INPUTFILE,OUTPUTFILE):-
 	file_to_list(INPUTFILE,List),
-	write_list_to_file(OUTPUTFILE,List).
+	rev(L,RevL),
+	convert_query_to_clause(RevL,L1),
+	rev(L1,L2),
+	%%
+	%%	More Work to do with L2
+	%%
+	write_list_to_file(OUTPUTFILE,L2).
 
 
 
@@ -74,13 +88,16 @@ hw4(INPUTFILE,OUTPUTFILE):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test(N) :- 
-	getInput(N,FILE),
+	getInput(N,INPUTFILE),
 	getOutput(N,OUTPUTFILE),
-	file_to_list(FILE,L), 
-	write_list_to_file(OUTPUTFILE,L).
+	file_to_list(INPUTFILE,L), 
+	rev(L,RevL),
+	convert_query_to_clause(RevL,L1),
+	rev(L1,L2),
+	write_list_to_file(OUTPUTFILE,L2).
 
-getInput(1,FILE):-
-	FILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/input.txt'.
+getInput(1,INPUTFILE):-
+	INPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/input.txt'.
 
 getOutput(1,OUTPUTFILE):-
 	OUTPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/output.txt'.	
