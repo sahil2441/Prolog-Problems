@@ -254,7 +254,8 @@ test(1,X) :-
 
 	getL1(1,L1),
 	getL2(1,L2),
-	union(L1,L2,X).
+	union(L1,L2,L),
+	get_element_to_be_deleted(L,X).
 	
 
 getInput(1,INPUTFILE):-
@@ -264,7 +265,7 @@ getOutput(1,OUTPUTFILE):-
 	OUTPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/output.txt'.	
 
 getL1(1,L):-
-	L=[a,b,c].
+	L=[a,b,neg(c)].
 getL2(1,L):-
 	L=[b,c,d].
 
