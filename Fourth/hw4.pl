@@ -135,6 +135,17 @@ start_resolution_process(L,L):-
 	get_last_element(L,A),
 	A=myClause(_,[]),
 	!.
+
+%%
+%%	Base case.
+%%	When A is not of the form myClause(X,Y)
+%%	but of the form resolution(X,Y,Z,A).
+%%
+start_resolution_process(L,L):-
+	get_last_element(L,A),
+	A=resolution(_,_,[],_),
+	!.
+
 %%
 %%	Start the resolution process --else
 %%
@@ -153,22 +164,47 @@ start_resolution_process(L,Result):-
 	J is I+1,
 	X=myClause(N,Y),
 	union(Y,L1,Z),
-	get_element_to_be_deleted(Z,X),
-	delete1(Z,X,Z1),
-	delete1(Z1,neg(X),Z2),
+	get_element_to_be_deleted(Z,TBD),
+	delete1(Z,TBD,Z1),
+	delete1(Z1,neg(TBD),Z2),
 
 	Result1=resolution(N,I,Z2,J),
-	append(L,Result1,Result2),
-	start_resolution_process(Result2,Result),
-	!.
+	append(L,[Result1],Result2),
+	start_resolution_process(Result2,Result).
+
+%%
+%%	When A is not of the form myClause(X,Y)
+%%	but of the form resolution(X,Y,Z,A).
+%%
+start_resolution_process(L,Result):-
+	get_last_element(L,A),
+	A=resolution(_,_,L1,I),
+
+	%% find which member list contnains H1. Returns a clause.
+	%% find clause in the deleted list
+	delete1(L,A,DeletedList),
+	find_corresponding_clause_in_list(DeletedList,L1,X),
+	X\=[],
+
+	%% J to be used as interger in resolution
+	J is I+1,
+	X=myClause(N,Y),
+	union(Y,L1,Z),
+	get_element_to_be_deleted(Z,TBD),
+	delete1(Z,TBD,Z1),
+	delete1(Z1,neg(TBD),Z2),
+
+	Result1=resolution(N,I,Z2,J),
+	append(L,[Result1],Result2),
+	start_resolution_process(Result2,Result).
 
 %%
 %%	This only gets called if above method could not find any element list that contains negation of element.
 %%	
-start_resolution_process(L,Result):-
-	X='The resolution doesnt evaluate to null/false.',
-	append(L,[X],Result),
-	!.
+% start_resolution_process(L,Result):-
+%	X='The resolution doesnt evaluate to false.',
+%	append(L,[X],Result),
+%	!.
 
 %%
 %%	Returns last element of a list
@@ -201,11 +237,6 @@ search(L1,L2,X):-
 	member(Y,L2).
 
 
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -227,13 +258,6 @@ hw4(INPUTFILE,OUTPUTFILE):-
 	start_resolution_process(L4,L5),
 	write_list_to_file(OUTPUTFILE,L5).
 
-
-
-
-
-
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -251,11 +275,10 @@ test(1,X) :-
 %%
 %%	Testing
 %%
+	getList2(1,L),
+	start_resolution_process(L,X).
+	
 
-	getL1(1,L1),
-	getL2(1,L2),
-	union(L1,L2,L),
-	get_element_to_be_deleted(L,X).
 	
 
 getInput(1,INPUTFILE):-
@@ -286,6 +309,12 @@ getList1(1,L):-
 	myClause(5,[neg(a_1)])
 	].
 
+getList2(1,L):-
+	L=
+	[
+	myClause(1,[a_1]),
+	myClause(2,[neg(a_1)])
+	].
 
 
 
