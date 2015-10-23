@@ -3,10 +3,25 @@
 %%%%%%%%%%%% 110281300
 %%%%%%%%%%%% COMPUTER SCIENCE
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% BASICS FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+union([], List2, List2).
+union([Head|Tail], List2, [Head|Result]) :- 
+    \+ member(Head, List2),
+    union(Tail, List2, Result).
+union([Head|Tail], List2, Result) :-
+    member(Head, List2),
+    union(Tail, List2, Result).
+
+delete1([H|T],H,T).
+delete1([H|Ys],X,[H|Zs]):-
+	delete1(Ys,X,Zs).
 
 rev([],[]).
 rev([H|T],L):-
@@ -25,9 +40,22 @@ length1([_|Xs], M):-
 member(X,[X|_]).
 member(X,[_|Ys]):-
 	member(X,Ys).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% HELPER FUNCTIONS
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%%	Return a member such that its negation is also present
+%%
+get_element_to_be_deleted(L,X):-
+	member(X,L),
+	member(neg(X),L),
+	!.
 
 %%
 %% Basic Rule of negation
@@ -116,15 +144,20 @@ start_resolution_process(L,Result):-
 	A=myClause(I,L1),
 
 	%% find which member list contnains H1. Returns a clause.
-	find_corresponding_clause_in_list(L,L1,X),
+	%% find clause in the deleted list
+	delete1(L,A,DeletedList),
+	find_corresponding_clause_in_list(DeletedList,L1,X),
 	X\=[],
 
 	%% J to be used as interger in resolution
 	J is I+1,
-	X=myClause(_,L),
-	union(L,T1),
+	X=myClause(N,Y),
+	union(Y,L1,Z),
+	get_element_to_be_deleted(Z,X),
+	delete1(Z,X,Z1),
+	delete1(Z1,neg(X),Z2),
 
-	Result1=resolution(J,List),
+	Result1=resolution(N,I,Z2,J),
 	append(L,Result1,Result2),
 	start_resolution_process(Result2,Result),
 	!.
@@ -173,9 +206,12 @@ search(L1,L2,X):-
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% MAIN CODE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 hw4(INPUTFILE,OUTPUTFILE):-
@@ -199,7 +235,11 @@ hw4(INPUTFILE,OUTPUTFILE):-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%% TEST CASES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 test(1,X) :- 
@@ -208,12 +248,13 @@ test(1,X) :-
 %	hw4(INPUTFILE,OUTPUTFILE).
 
 
-	%%
-	%%	Testing convert list
-	%%
+%%
+%%	Testing
+%%
 
-	getList1(1,L),
-	find_corresponding_clause_in_list(L,[b3],X).
+	getL1(1,L1),
+	getL2(1,L2),
+	union(L1,L2,X).
 	
 
 getInput(1,INPUTFILE):-
@@ -221,6 +262,12 @@ getInput(1,INPUTFILE):-
 
 getOutput(1,OUTPUTFILE):-
 	OUTPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/output.txt'.	
+
+getL1(1,L):-
+	L=[a,b,c].
+getL2(1,L):-
+	L=[b,c,d].
+
 
 getList(1,L):-
 	L=[
