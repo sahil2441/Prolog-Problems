@@ -201,10 +201,10 @@ start_resolution_process(L,Result):-
 %%
 %%	This only gets called if above method could not find any element list that contains negation of element.
 %%	
-% start_resolution_process(L,Result):-
-%	X='The resolution doesnt evaluate to false.',
-%	append(L,[X],Result),
-%	!.
+start_resolution_process(L,Result):-
+	X='The resolution doesnt evaluate to false.',
+	append(L,[X],Result),
+	!.
 
 %%
 %%	Returns last element of a list
@@ -252,9 +252,7 @@ hw4(INPUTFILE,OUTPUTFILE):-
 	rev(L1,L2),
 	convert_elements_to_list(L2,L3),
 	rev(L3,L4),
-	%%
-	%%	More Work to do with L3
-	%%
+
 	start_resolution_process(L4,L5),
 	write_list_to_file(OUTPUTFILE,L5).
 
@@ -266,17 +264,17 @@ hw4(INPUTFILE,OUTPUTFILE):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-test(1,X) :- 
-%	getInput(N,INPUTFILE),
-%	getOutput(N,OUTPUTFILE),
-%	hw4(INPUTFILE,OUTPUTFILE).
+test(1) :- 
+	getInput(N,INPUTFILE),
+	getOutput(N,OUTPUTFILE),
+	hw4(INPUTFILE,OUTPUTFILE).
 
 
 %%
 %%	Testing
 %%
-	getList2(1,L),
-	start_resolution_process(L,X).
+%	getList1(1,L),
+%	start_resolution_process(L,X).
 	
 
 	
