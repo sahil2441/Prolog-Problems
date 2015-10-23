@@ -299,13 +299,17 @@ hw4(INPUTFILE,OUTPUTFILE):-
 	Y='Success',
 	(
 		X=resolution(_,_,_,_) ->
-		L7=[Y|L6];
-		L7=L6
-	),
-	convert_list_to_clausal_form(L7,L8),
-	rev(L8,L9),
-	write_list_to_file(OUTPUTFILE,L9).
+		L7=[Y|L6],
+		convert_list_to_clausal_form(L7,L8),
+		rev(L8,L9),
+		write_list_to_file(OUTPUTFILE,L9)
+		
+		;
 
+		L7=L6,
+		write_list_to_file(OUTPUTFILE,L7)
+	).
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
