@@ -236,6 +236,42 @@ search(L1,L2,X):-
 	check_negation(neg(X),Y),
 	member(Y,L2).
 
+%%
+%%	Removes terms containing myClause
+%%
+remove_myclause_terms([H|T],[H|T]):-
+	H=resolution(_,_,_,_),
+	!.	
+remove_myclause_terms([H|T],L):-
+	H=myClause(_,_),
+	remove_myclause_terms(T,L),
+	!.
+
+%%
+%%	Last step --to convert back to clausal form
+%%
+
+convert_list_to_clausal_form([],[]):-!.
+convert_list_to_clausal_form([H|T],Result):-
+	H='Success',
+	append(Result1,[H],Result),
+	convert_list_to_clausal_form(T,Result1).
+
+convert_list_to_clausal_form([H|T],Result):-
+	H=resolution(A,B,L,D),
+	get_clause_from_list(L,Clause),
+	X=resolution(A,B,Clause,D),
+	append(Result1,[X],Result),
+	convert_list_to_clausal_form(T,Result1).
+
+get_clause_from_list([],A):-
+	A='empty',
+	!.
+get_clause_from_list([H],H):-!.
+get_clause_from_list([H|T],X):-
+	X=or(H,B),
+	get_clause_from_list(T,B).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -254,7 +290,21 @@ hw4(INPUTFILE,OUTPUTFILE):-
 	rev(L3,L4),
 
 	start_resolution_process(L4,L5),
-	write_list_to_file(OUTPUTFILE,L5).
+	remove_myclause_terms(L5,L6),
+
+	%% Check if last element if of the resolution form
+	%% Else it was not not a success
+
+	get_last_element(L6,X),
+	Y='Success',
+	(
+		X=resolution(_,_,_,_) ->
+		L7=[Y|L6];
+		L7=L6
+	),
+	convert_list_to_clausal_form(L7,L8),
+	rev(L8,L9),
+	write_list_to_file(OUTPUTFILE,L9).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -269,15 +319,8 @@ test(1) :-
 	getOutput(N,OUTPUTFILE),
 	hw4(INPUTFILE,OUTPUTFILE).
 
-
-%%
-%%	Testing
-%%
-%	getList1(1,L),
-%	start_resolution_process(L,X).
-	
-
-	
+%	getList3(1,L),
+%	convert_list_to_clausal_form(L,X).
 
 getInput(1,INPUTFILE):-
 	INPUTFILE='/Users/sahiljain/Dropbox/SBU/Academics/Fall_15/ComputingWithLogic/Assignments/Prolog/Fourth/input.txt'.
@@ -312,6 +355,16 @@ getList2(1,L):-
 	[
 	myClause(1,[a_1]),
 	myClause(2,[neg(a_1)])
+	].
+
+getList3(1,L):-
+	L=
+	[
+		'Success',
+		resolution(1,5,[a_2],6),
+		resolution(2,6,[b_2,b_3],7),
+		resolution(3,7,[b_3],8),
+		resolution(4,8,[],9)
 	].
 
 
