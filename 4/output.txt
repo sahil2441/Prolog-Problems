@@ -1,0 +1,5 @@
+Success
+resolution(2,5,neg(u),6)
+resolution(1,6,neg(r),7)
+resolution(3,7,neg(w),8)
+resolution(5,8,empty,9)
