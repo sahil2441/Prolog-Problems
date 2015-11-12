@@ -100,7 +100,22 @@ prepare_list([H|T],Subsets,[X|M1]):-
 prepare_list([_|T],Subsets,M):-
 	prepare_list(T,Subsets,M).
 
-	
+%%%%%%%%%%
+%%% Part 3
+%%%%%%%%%%
+leastmodel(P, M):-
+	find_least_model(P,[],M).
+
+find_least_model(P,L,M):-
+	tp(P,L,M1),
+	length1(M1,N),
+	length1(L,N),
+	M=M1,
+	!.
+find_least_model(P,L,M):-
+	tp(P,L,M1),
+	find_least_model(P,M1,M).
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -112,14 +127,17 @@ prepare_list([_|T],Subsets,M):-
 test(X):-
 	get_input(L),
 %	propositions(L,X).
-	tp(L,[r],X).
+%	tp(L,[r],X).
+	leastmodel(L,X).
 	
 get_input(L):-
 	L=
-	[rule(p, [r]),
-	 rule(q, [q]),
+	[rule(p, [a]),
+	 rule(q, [p,r]),
 	 rule(r, []),
-	 rule(p,[])
+	 rule(a, []),
+	 rule(b, []),
+	 rule(c, [c])	 	 
 	 ].
 
 get_list(L):-
