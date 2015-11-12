@@ -69,8 +69,10 @@ max(X,Y,Y):-
 max(X,Y,X):-
 	Y<X.
 
-appendNew([H|T]-T,L,[H|NewTail]-NewTail):-
-	NewTail =[T|L].
+appendNew(A-B,B-C,A-C).
+add(L-T1,X,L-S):-
+	appendNew(L-[X|T2],[X|T2]-T2,L-S).
+rotate([H|T]-[H|A],T-A).
 
 findLast([X],X).
 findLast([_|T],X):-
@@ -90,12 +92,12 @@ reverse1([H|T],L):-
 isPalindrome(L):-
 	rev(L,L).
 
-flatten([],[]).
+flatten([],[]):-!.
 flatten([H|T],L):-
 	flatten(H,L1),
 	flatten(T,L2),
-	append(L1,L2,L).
-flatten(L,[L]).	
+	append(L1,L2,L),!.
+flatten(L,[L]):-!.
 
 %Inefficient-O(n^2)
 postOrder(Root,[Root]):-
@@ -137,13 +139,6 @@ preorder_dl(Root,L,T):-
 	L = [Root|L1],
 	preorder_dl(LeftChild,[L1|L2],L2),
 	preorder_dl(RightChild,[L2|T],T).
-
-range(Y,X,[]):-
-	Y >X.
-range(X,Y,[X|T]):-
-	X1 is X+1,
-	range(X1,Y,T).
-
 
 preorder_dnl(Root, L) :-
 	preorder_d_l(Root, L-[]).
@@ -251,6 +246,37 @@ q_sort([H|T],Acc,Sorted):-
 	pivoting(H,T,L1,L2),
 	q_sort(L1,Acc,Sorted1),q_sort(L2,[H|Sorted1],Sorted).
 
+% P08 (**): Eliminate consecutive duplicates of list elements.
+
+% compress(L1,L2) :- the list L2 is obtained from the list L1 by
+%    compressing repeated occurrences of elements into a single copy
+%    of the element.
+%    (list,list) (+,?)
+
+compress([],[]):-!.
+compress([X],[X]):-!.
+compress([X,X|Xs],Zs) :- compress([X|Xs],Zs),!.
+compress([X,Y|Ys],[X|Zs]) :- X \= Y, compress([Y|Ys],Zs),!.
+
+range(I,I,[I]):-!.
+range(I,K,[I|L]) :- I < K, I1 is I + 1, range(I1,K,L).
+
+powerset([],[[]]).
+powerset(L, [H|T]):-
+  append([H|T], _, L).
+powerset([_|L], P):-
+  powerset(L, P).
+
+test(N,X):-
+	get_input(N,L),
+	findall(R,powerset(L,R),X).
+
+get_input(1,L):-
+	L=[1,2].
+
+
+get_input(2,L):-
+	L=[].
 
 
 
