@@ -56,8 +56,8 @@ powerset(L, [H|T]):-
 powerset([_|L], P):-
   powerset(L, P).
 
-confirm_vertex_present(Vertices,G,edge(A,B)):-
-	member(edge(A,B,_),G),
+confirm_vertex_present(Vertices,G,e(A,B,C)):-
+	member(e(A,B,C),G),
 	member(A,Vertices),
 	member(B,Vertices).
 	
@@ -68,7 +68,8 @@ ms_tree(graph([N|Ns],GraphEdges),graph([N|Ns],TreeEdges),Sum) :-
    predsort(compare_edge_values,GraphEdges,GraphEdgesSorted),
    transfer(Ns,GraphEdgesSorted,TreeEdgesUnsorted),
    sort(TreeEdgesUnsorted,TreeEdges),
-   edge_sum(TreeEdges,Sum).
+   edge_sum(TreeEdges,Sum),
+   !.
 
 compare_edge_values(Order,e(X1,Y1,V1),e(X2,Y2,V2)) :- 
 	compare(Order,V1+X1+Y1,V2+X2+Y2).
@@ -95,6 +96,14 @@ extend_power_set([H|T],L,R):-
 	append(R1,[H1],R),
 	extend_power_set(T,L,R1).
 
+convert_edge_notation([],[]):-!.
+convert_edge_notation([H|T],Result):-
+	H=edge(X,Y,Z),
+	A=e(X,Y,Z),
+	append(Result1,[A],Result),
+	convert_edge_notation(T,Result1),
+	!.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -105,7 +114,8 @@ extend_power_set([H|T],L,R):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 min_cost(Costs):-
-	findall(edge(X,Y,Z),edge(X,Y,Z),G),
+	findall(edge(X,Y,Z),edge(X,Y,Z),G1),
+	convert_edge_notation(G1,G),
 	get_all_vertices(V),
 	start(Start),
 	findall(D,dest(D),Destinations),
@@ -117,16 +127,14 @@ min_cost(Costs):-
 	findall(Cost,min_cost_helper(Powerset_Extended,G,Cost),Costs).
 %	find_min(Costs,Cost).
 
-min_cost_helper(Powerset_Extended,G,Input):-
+min_cost_helper(Powerset_Extended,G,S):-
 	member(X,Powerset_Extended),
 	findall(Member,confirm_vertex_present(X,G,Member),G1),
-	append([X],[G1],R),
-	Input=graph(R),
-	write(Input),
-	nl.
-%	human_gterm(H,Input),
-%    write(H), nl, 
-%   	ms_tree(G,T,S),
+	Input=graph(X,G1),
+    write(Input), nl, 
+   	ms_tree(Input,_,S),
+   	write(S), nl.
+
 %	human_gterm(TH,T),
 %   	write(S), nl,
 %	write(TH).
@@ -141,17 +149,18 @@ min_cost_helper(Powerset_Extended,G,Input):-
 
 test(X):-
 %	get_input(G),
+%	ms_tree(G,T,X).
 %	extend_power_set(G,[1,6],X).
 	min_cost(X).
 
 get_input(G):-
-	G=[[1],[1,2]].
-%	G=graph(
-%		[a, b, c, d, e, f, g, h], 
-%		[e(a, b, 5), e(a, d, 3), e(b, c, 2), e(b, e, 4), e(c, e, 6),
-%		 e(d, e, 7), e(d, f, 4), e(d, g, 3), e(e, h, 5), e(f, g, 4), 
-%		 e(g, h, 1)]
-%		 ).
+%	G=[[1],[1,2]].
+	G=graph(
+		[a, b, c, d, e, f, g, h], 
+		[e(a, b, 5), e(a, d, 3), e(b, c, 2), e(b, e, 4), e(c, e, 6),
+		 e(d, e, 7), e(d, f, 4), e(d, g, 3), e(e, h, 5), e(f, g, 4), 
+		 e(g, h, 1)]
+		 ).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
