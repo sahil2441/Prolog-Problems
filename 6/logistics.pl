@@ -43,10 +43,6 @@ member(X,[X|_]).
 member(X,[_|Ys]):-
 	member(X,Ys).
 
-%append([],[L],L).
-%append([H|T],X,[H|Y]):-
-%	append(T,X,Y).
-
 edges(E):-
 	E=edge(_,_,_).
 
@@ -60,12 +56,11 @@ powerset(L, [H|T]):-
 powerset([_|L], P):-
   powerset(L, P).
 
-confirm_vertex_present(Vertices,G,M):-
-	member(M,G),
-	M=edge(X,Y,_),
-	member(X,Vertices),
-	member(Y,Vertices).
-
+confirm_vertex_present(Vertices,G,edge(A,B)):-
+	member(edge(A,B,_),G),
+	member(A,Vertices),
+	member(B,Vertices).
+	
 %%%%% MS Tree
 
 
@@ -109,7 +104,7 @@ extend_power_set([H|T],L,R):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-min_cost(Powerset_Extended):-
+min_cost(Costs):-
 	findall(edge(X,Y,Z),edge(X,Y,Z),G),
 	get_all_vertices(V),
 	start(Start),
@@ -118,21 +113,23 @@ min_cost(Powerset_Extended):-
 	delete_destination(V1,Destinations,V2),
 	findall(R,powerset(V2,R),Powerset),
 	append([Start],Destinations,L),
-	extend_power_set(Powerset,L,Powerset_Extended).
-%	findall(Cost,min_cost_helper(Powerset,G,Cost),Costs),
+	extend_power_set(Powerset,L,Powerset_Extended),
+	findall(Cost,min_cost_helper(Powerset_Extended,G,Cost),Costs).
 %	find_min(Costs,Cost).
 
-min_cost_helper(Powerset,G,S):-
-	member(X,Powerset),
+min_cost_helper(Powerset_Extended,G,Input):-
+	member(X,Powerset_Extended),
 	findall(Member,confirm_vertex_present(X,G,Member),G1),
-	append([X],[G1],Input),
-
-	human_gterm(H,Input),
-    write(H), nl, 
-   	ms_tree(G,T,S),
-	human_gterm(TH,T),
-   	write(S), nl,
-	write(TH).
+	append([X],[G1],R),
+	Input=graph(R),
+	write(Input),
+	nl.
+%	human_gterm(H,Input),
+%    write(H), nl, 
+%   	ms_tree(G,T,S),
+%	human_gterm(TH,T),
+%   	write(S), nl,
+%	write(TH).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
