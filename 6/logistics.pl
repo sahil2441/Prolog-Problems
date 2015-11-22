@@ -33,6 +33,7 @@ edge(3,5,3).
 edge(4,5,4).
 edge(4,6,11).
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%% HELPER FUNCTIONS
@@ -122,7 +123,8 @@ min_cost(Cost):-
 	append([Start],Destinations,L),
 	extend_power_set(Powerset,L,Powerset_Extended),
 	findall(Cost,min_cost_helper(Powerset_Extended,G,Cost),Costs),
-	minl(Costs,Cost).
+	minl(Costs,Cost),
+	!.
 
 min_cost_helper(Powerset_Extended,G,S):-
 	member(X,Powerset_Extended),
