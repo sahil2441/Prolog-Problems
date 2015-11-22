@@ -77,13 +77,10 @@ compare_edge_values(Order,e(X1,Y1,V1),e(X2,Y2,V2)) :-
 edge_sum([],0).
 edge_sum([e(_,_,V)|Es],S) :- edge_sum(Es,S1), S is S1 + V. 
 
-find_min([X],X):-!.
-find_min([H|T],H):-
-	H < Min,
-	find_min(T,Min),
-	!.
-find_min([_|T],Min):-
-	find_min(T,Min).
+minl([Only], Only).
+minl([Head|Tail], Minimum) :-
+	minl(Tail, TailMin),
+	Minimum is min(Head, TailMin).
 
 delete_destination(V,[],V):-!.
 delete_destination(V,[H|T],R):-
@@ -113,7 +110,7 @@ convert_edge_notation([H|T],Result):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-min_cost(Costs):-
+min_cost(Cost):-
 	findall(edge(X,Y,Z),edge(X,Y,Z),G1),
 	convert_edge_notation(G1,G),
 	get_all_vertices(V),
@@ -124,20 +121,16 @@ min_cost(Costs):-
 	findall(R,powerset(V2,R),Powerset),
 	append([Start],Destinations,L),
 	extend_power_set(Powerset,L,Powerset_Extended),
-	findall(Cost,min_cost_helper(Powerset_Extended,G,Cost),Costs).
-%	find_min(Costs,Cost).
+	findall(Cost,min_cost_helper(Powerset_Extended,G,Cost),Costs),
+	minl(Costs,Cost).
 
 min_cost_helper(Powerset_Extended,G,S):-
 	member(X,Powerset_Extended),
 	findall(Member,confirm_vertex_present(X,G,Member),G1),
 	Input=graph(X,G1),
-    write(Input), nl, 
-   	ms_tree(Input,_,S),
-   	write(S), nl.
-
-%	human_gterm(TH,T),
-%   	write(S), nl,
-%	write(TH).
+%   write(Input), nl, 
+  	ms_tree(Input,_,S).
+%   write(S), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
